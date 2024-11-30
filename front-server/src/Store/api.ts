@@ -374,7 +374,7 @@ const fetchAccessToken = async () => {
     if (decode.exp < nowDate) {
       // 리프레쉬 토큰 발급 서버 요청
       const { data } = await axios({
-        url: `${process.env.REACT_APP_API_URL}refresh`,
+        url: `${process.env.REACT_APP_API_URL}/refresh`,
         method: 'POST',
         headers: {
           'x-refresh-token': localStorage.getItem('refreshToken')
@@ -410,7 +410,7 @@ export const Api = createApi({
     'AdminAssetApi'
   ],
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_API_URL || 'http://localhost:8080',
+    baseUrl: process.env.REACT_APP_API_URL || `http://localhost:8080`,
     prepareHeaders: async (headers) => {
       // By default, if we have a token in the store, let's use that for authenticated requests
       const token = await fetchAccessToken();

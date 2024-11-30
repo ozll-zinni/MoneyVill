@@ -72,7 +72,7 @@ function Login(): JSX.Element {
       // }
       closeLogin();
       toast.success('어서오세요!!');
-      window.location.href = 'http://localhost:5173';
+      window.location.href = process.env.REACT_APP_REDIRECT_URL|| `http://localhost:5173/client/`;
     } else {
       toast.error('아이디와 비밀번호를 확인해주세요!!');
       // console.log('로그인 에러 :', loginData.error);

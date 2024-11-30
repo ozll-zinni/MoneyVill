@@ -208,7 +208,7 @@ function Exchange(): JSX.Element {
     }
     const token = localStorage.getItem('accessToken');
 
-    const newEventSource = new EventSourcePolyfill(`${process.env.REACT_APP_API_URL}stock/connect`, {
+    const newEventSource = new EventSourcePolyfill(`${process.env.REACT_APP_API_URL}/stock/connect`, {
       headers: {
         'Content-Type': 'text/event-stream',
         'Access-Control-Allow-Origin': '*',
@@ -237,7 +237,7 @@ function Exchange(): JSX.Element {
       eventSource.close();
       const token = localStorage.getItem('accessToken');
 
-      const newEventSource = new EventSourcePolyfill(`${process.env.REACT_APP_API_URL}stock/connect`, {
+      const newEventSource = new EventSourcePolyfill(`${process.env.REACT_APP_API_URL}/stock/connect`, {
         headers: {
           'Content-Type': 'text/event-stream',
           'Access-Control-Allow-Origin': '*',
@@ -255,7 +255,7 @@ function Exchange(): JSX.Element {
   if (!eventSource) {
     const token = localStorage.getItem('accessToken');
 
-    const newEventSource = new EventSourcePolyfill(`${process.env.REACT_APP_API_URL}stock/connect`, {
+    const newEventSource = new EventSourcePolyfill(`${process.env.REACT_APP_API_URL}/stock/connect`, {
       headers: {
         'Content-Type': 'text/event-stream',
         'Access-Control-Allow-Origin': '*',

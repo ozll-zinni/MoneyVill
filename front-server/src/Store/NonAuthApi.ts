@@ -28,7 +28,7 @@ export const NonAuthApi = createApi({
   reducerPath: 'NonAuthApi',
   tagTypes: ['NonAuthApi'],
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_API_URL
+    baseUrl: process.env.REACT_APP_API_URL || `http://localhost:8080`
   }),
   endpoints: (builder) => ({
     // 1. 아이디 중복체크
