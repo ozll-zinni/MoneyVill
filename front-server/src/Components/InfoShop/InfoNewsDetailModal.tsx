@@ -64,9 +64,9 @@ export default function InfoNewsDetailModal({ closeModal, propsData, isOpen }: M
                     <div className="flex justify-center w-full">
                       <div className="relative">
                         <img className="w-full h-auto" src={src} alt="news" />
-                        <div className="absolute top-1/3 left-12 px-4 text-l text-gray-600 break-keep lg:text-2l">{propsData.kind}</div>
-                        <div className="absolute top-1/3 right-12 px-4 text-l text-gray-600 break-keep lg:text-2l">{propsData.date}</div>
-                        <div className="w-1/2 absolute top-1/2 left-1/4 px-4 text-xl text-gray-600 break-keep lg:text-2xl">{propsData.content}</div>
+                        <div className="absolute top-1/3 left-12 px-4 text-l text-gray-600 font-semibold break-keep lg:text-2l">{propsData.kind}</div>
+                        <div className="absolute top-1/3 right-12 px-4 text-l text-gray-600 font-semibold break-keep lg:text-2l">{propsData.date}</div>
+                        <div className="w-1/2 absolute top-1/2 left-1/4 px-4 text-xl text-black-600 font-semibold break-keep lg:text-2xl">{propsData.content}</div>
                       </div>
                     </div>
                   </Dialog.Panel>
