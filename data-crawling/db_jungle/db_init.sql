@@ -9,7 +9,7 @@ CREATE TABLE market (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 INSERT INTO market(id, created_at, updated_at, end_at, game_date, start_at) VALUES
-                                                 (1, '2024-11-27 12:42:00.059000', '2024-11-28 10:44:00.027000', '2024-10-31', '2024-08-01',  '2024-01-01');
+                                                 (1, '2024-11-27 12:42:00.059000', '2024-11-28 10:44:00.027000', '2024-10-31', '2024-06-01',  '2024-01-01');
 
 -- company init
 DROP TABLE IF EXISTS company;
