@@ -16,9 +16,9 @@ export default function InfoNewsDetailModal({ closeModal, propsData, isOpen }: M
     const img = new Image();
     img.onload = () => {
       setIsLoaded(true);
-      setSrc('/images/icons/newspaper.png');
+      setSrc('/images/icons/newspaper2.png');
     };
-    img.src = '/images/icons/newspaper.png';
+    img.src = '/images/icons/newspaper2.png';
   }, []);
 
   return (
@@ -55,20 +55,20 @@ export default function InfoNewsDetailModal({ closeModal, propsData, isOpen }: M
                       className="absolute w-4 h-4 cursor-pointer opacity-60 lg:w-6 lg:h-6 top-2 right-2 hover:opacity-80"
                       alt="cancelBlack"
                     />
-                    <div className="flex items-end justify-between h-fit">
+                    {/* <div className="flex items-end justify-between h-fit">
                       <span className={`${propsData.color} text-white w-1/6 font-medium lg:font-bold`}>
                         {propsData.kind}
                       </span>
                       <span>{propsData.date}</span>
-                    </div>
+                    </div> */}
                     <div className="flex justify-center w-full">
-                      <img className="w-full h-auto" src={src} alt="news" />
+                      <div className="relative">
+                        <img className="w-full h-auto" src={src} alt="news" />
+                        <div className="absolute top-1/3 left-12 px-4 text-l text-gray-600 break-keep lg:text-2l">{propsData.kind}</div>
+                        <div className="absolute top-1/3 right-12 px-4 text-l text-gray-600 break-keep lg:text-2l">{propsData.date}</div>
+                        <div className="w-1/2 absolute top-1/2 left-1/4 px-4 text-xl text-gray-600 break-keep lg:text-2xl">{propsData.content}</div>
+                      </div>
                     </div>
-                    <Dialog.Title
-                      as="div"
-                      className={`text-base font-semibold leading-6 text-center lg:text-xl lg:font-bold bg-[#d2d3d5] h-[25vh]`}>
-                      <div className="px-4 text-xl text-gray-600 break-keep lg:text-2xl">{propsData.content}</div>
-                    </Dialog.Title>
                   </Dialog.Panel>
                 </Transition.Child>
               </div>
