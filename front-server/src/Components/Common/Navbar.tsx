@@ -91,16 +91,16 @@ function Navbar(): JSX.Element {
   }, [getUsersInfo, dispatch]);
 
 
-  useEffect(() => {
-    if (dataUserInfo) {
-      const { nickname, currentMoney, totalStockReturn } = dataUserInfo.data;
-      setMyNickName(nickname);
-      setCurrentMoney(currentMoney.toLocaleString());
-      dispatch(changeCurrentMoneyStatusStatus(currentMoney.toLocaleString()));
-      setTotalStockReturn(totalStockReturn);
-    }
-    // 현재 잔액 변경될 때 실행되도록 추가
-  }, [currentMoneyStatus, dataUserInfo, dispatch]);
+  // useEffect(() => {
+  //   if (dataUserInfo) {
+  //     const { nickname, currentMoney, totalStockReturn } = dataUserInfo.data;
+  //     setMyNickName(nickname);
+  //     setCurrentMoney(currentMoney.toLocaleString());
+  //     dispatch(changeCurrentMoneyStatusStatus(currentMoney.toLocaleString()));
+  //     setTotalStockReturn(totalStockReturn);
+  //   }
+  //   // 현재 잔액 변경될 때 실행되도록 추가
+  // }, [currentMoneyStatus, dataUserInfo, dispatch]);
 
   useEffect(() => {
     // 창 높이 변할떄마다 실행
