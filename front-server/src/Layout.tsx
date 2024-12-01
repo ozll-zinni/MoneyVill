@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from 'Store/hooks';
 import Login from 'Components/Login/Login';
 import SignUp from 'Components/SignUp/SignUp';
 import { useEffect, useRef, useState } from 'react';
-// import Navbar from 'Components/Common/Navbar';
+import Navbar from 'Components/Common/Navbar';
 import { playBGM } from 'Store/store';
 
 function Layout(): JSX.Element {
@@ -17,7 +17,7 @@ function Layout(): JSX.Element {
   // 현재 브라우저 윈도우 너비 값
   const [screenWidth, setScreenWidth] = useState<number>(0);
   // 네브바 상태 체크
-  // const [isNavBar, setIsNavBar] = useState<boolean>(false);
+  const [isNavBar, setIsNavBar] = useState<boolean>(false);
   const [clickBgm, setClickBgm] = useState<boolean>(false);
   // 로그인 창 상태
   const loginStatus = useAppSelector((state) => {
@@ -47,18 +47,18 @@ function Layout(): JSX.Element {
     return () => window.removeEventListener('resize', updateScreenWidth);
   }, []);
 
-  // useEffect(() => {
-  //   // 네브바 보이기 설정
-  //   if (location.pathname !== '/') {
-  //     setIsNavBar(true);
-  //   } else {
-  //     setIsNavBar(false);
-  //   }
-  //   // 로그인 여부 체크후 인트로 보내기
-  //   if (!localStorage.getItem('accessToken')) {
-  //     navigate('/');
-  //   }
-  // }, [location.pathname]);
+  useEffect(() => {
+    // 네브바 보이기 설정
+    if (location.pathname !== '/') {
+      setIsNavBar(true);
+    } else {
+      setIsNavBar(true);
+    }
+    // 로그인 여부 체크후 인트로 보내기
+    if (!localStorage.getItem('accessToken')) {
+      navigate('/');
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     // 레이아웃 최소값 세팅
@@ -84,7 +84,7 @@ function Layout(): JSX.Element {
             loginStatus || signUpStatus ? 'w-[60vw] lg:w-[70vw]' : 'w-full'
           } container relative flex h-screen max-h-screen mx-auto lg:max-w-screen-xl`}>
           {/* 네브바  */}
-          {/* {isNavBar && <Navbar />} */}
+          {isNavBar && <Navbar />}
           {/* 그 밖의 컴포넌트 */}
           <Outlet />
         </div>
