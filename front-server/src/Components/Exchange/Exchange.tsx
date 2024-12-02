@@ -112,7 +112,7 @@ function Exchange(): JSX.Element {
   const cancelClickBtn = new Audio(cancelClickSound);
   const successFxSound = new Audio(successFx);
   const errorFxSound = new Audio(errorFx);
-  const [isPossibleStockTime, setIsPossibleStockTime] = useState<boolean>(false);
+  const [isPossibleStockTime, setIsPossibleStockTime] = useState<boolean>(true);
   const [isNewsClick, setIsNewsClick] = useState<boolean>(false);
   const [isMobileInfo, setIsMobileInfo] = useState<boolean>(false);
   const [isIRClick, setIsIRClick] = useState<boolean>(false);
