@@ -221,10 +221,10 @@ cur.execute(sql)
 con.close()
 
 # Insert news data
-process_news_data("data_jungle/data(news_네이버_241201).p", "news_origin")
-process_news_data("data_jungle/data(news_삼성전자_241201).p", "news_origin")
-process_news_data("data_jungle/data(news_셀트리온_241201).p", "news_origin")
-process_news_data("data_jungle/data(news_HYBE엔터_241201).p", "news_origin")
+process_news_data("data_jungle/data(news_네이버_241202).p", "news_origin")
+process_news_data("data_jungle/data(news_삼성전자_241202).p", "news_origin")
+process_news_data("data_jungle/data(news_셀트리온_241202).p", "news_origin")
+process_news_data("data_jungle/data(news_HYBE엔터_241202).p", "news_origin")
 
 #########################################################################
 # SQL 파일 읽기 및 실행
