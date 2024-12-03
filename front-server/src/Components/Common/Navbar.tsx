@@ -155,32 +155,51 @@ function Navbar(): JSX.Element {
         break;
     }
   };
-  // 인덱스 구하는 함수
-  const getIndex = useCallback(() => {
-    const now = new Date();
-    // 10시 시작 시간
-    const start = new Date();
-    start.setHours(10, 0, 0, 0);
-    // 계산
-    let index = 0;
-    const diff = now.getTime() - start.getTime();
-    const dayOfWeek = now.getDay(); // 일요일 ~ 토요일
-    const hour = now.getHours();
-    // 짝수일때
-    const isEvenDay = dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 6;
-    // 짝수와 시간체크
-    if ((isEvenDay && hour < 10) || (hour > 22)) {
-      index = 180;
-    } else if (isEvenDay && hour >= 10 && hour <= 22) {
-      index = Math.floor(diff / (4 * 60 * 1000)) + 180;
-    } else if (!isEvenDay && hour >= 10 && hour <= 22) {
-      index = Math.floor(diff / (4 * 60 * 1000));
-    }
+  // // 인덱스 구하는 함수
+  // const getIndex = useCallback(() => {
+  //   const now = new Date();
+  //   // 10시 시작 시간
+  //   const start = new Date();
+  //   start.setHours(10, 0, 0, 0);
+  //   // 계산
+  //   let index = 0;
+  //   const diff = now.getTime() - start.getTime();
+  //   const dayOfWeek = now.getDay(); // 일요일 ~ 토요일
+  //   const hour = now.getHours();
+  //   // 짝수일때
+  //   const isEvenDay = dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 6;
+  //   // 짝수와 시간체크
+  //   if ((isEvenDay && hour < 10) || (hour > 22)) {
+  //     index = 180;
+  //   } else if (isEvenDay && hour >= 10 && hour <= 22) {
+  //     index = Math.floor(diff / (4 * 60 * 1000)) + 180;
+  //   } else if (!isEvenDay && hour >= 10 && hour <= 22) {
+  //     index = Math.floor(diff / (4 * 60 * 1000));
+  //   }
+
+  //   // 받아온 데이터 세팅
+  //   dispatch(getCurrentDataIndex(index));
+  // }, [dispatch]);
+
+// 인덱스 구하는 함수
+const getIndex = useCallback(() => {
+  const now = new Date();
+  // 현재 시간의 정각 (시작 기준점)
+  const start = new Date();
+  start.setHours(now.getHours(), 0, 0, 0);
+  
+  // 계산
+  let index = 0;
+  const diff = now.getTime() - start.getTime(); // 정각부터 현재까지 경과 시간(ms)
+  const secondsElapsed = Math.floor(diff / 1000); // 경과 시간(초)
+  
+  // 20초마다 index 증가
+  index = Math.floor(secondsElapsed / 20);
 
     // 받아온 데이터 세팅
     dispatch(getCurrentDataIndex(index));
   }, [dispatch]);
-
+  
   useEffect(() => {
     const now = new Date();
     const hour = now.getHours();
