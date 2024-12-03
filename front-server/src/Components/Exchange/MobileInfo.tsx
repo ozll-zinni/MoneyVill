@@ -1,22 +1,26 @@
 import React, { ChangeEventHandler, useEffect, useRef, useState } from 'react';
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import Chart from './Chart';
-
-interface CahrtDataType {
-  일자: string;
-  종가: number;
-}
+import ChartComponent from './Chart';
+import { CandleData, ChartDataType } from '../../types/types';
 
 interface MobileInfoType {
   isMobileInfo: boolean;
   setIsMobileInfo: React.Dispatch<React.SetStateAction<boolean>>;
-  oilData: CahrtDataType[];
-  goldData: CahrtDataType[];
-  usdData: CahrtDataType[];
-  jypData: CahrtDataType[];
-  euroData: CahrtDataType[];
+  oilData: ChartDataType[];
+  goldData: ChartDataType[];
+  usdData: ChartDataType[];
+  jypData: ChartDataType[];
+  euroData: ChartDataType[];
 }
-
+const transformToCandle = (data: ChartDataType[]): CandleData[] => {
+  return data.map(item => ({
+    date: new Date(item.일자),
+    open: item.종가, // Using 종가 for all OHLC values since we only have closing price
+    high: item.종가,
+    low: item.종가,
+    close: item.종가
+  }));
+};
 function MobileInfo({
   isMobileInfo,
   setIsMobileInfo,
@@ -30,7 +34,7 @@ function MobileInfo({
   const ref2 = useRef<HTMLSelectElement>(null);
   const [isClickInfo, setIsClickInfo] = useState(0);
   const [isExchange, setIsExchange] = useState(0);
-  const [clickData, setClickData] = useState<CahrtDataType[]>([
+  const [clickData, setClickData] = useState<ChartDataType[]>([
     {
       일자: '',
       종가: 0
@@ -194,7 +198,7 @@ function MobileInfo({
             </div>
             {/* 선택한 것에 대한 차트 변경 */}
             <div className="w-full h-[11rem] text-[0.8rem] font-medium">
-              <Chart data={clickData} />
+              <ChartComponent data={transformToCandle(clickData)} height={176} />
             </div>
             <div className="flex items-end justify-between w-full px-2">
               <div className="flex flex-col justify-start items-start text-[#9B9B9B] text-[0.6rem] lg:text-[0.8rem]">
