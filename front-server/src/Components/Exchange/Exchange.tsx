@@ -1,7 +1,6 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import MobileInfo from './MobileInfo';
 import NewsModal from './NewsModal';
-import styled from './Exchange.module.css';
 import {
   useDeleteStockMutation,
   useLazyGetStockQuery,
@@ -20,6 +19,7 @@ import Loading from 'Components/Common/Loading';
 import { dbService } from '../../firebase';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
+// Interface for Candle Data used in Chart.tsx
 interface CandleData {
   date: Date;
   open: number;
@@ -500,6 +500,7 @@ function Exchange(): JSX.Element {
     if (stockId) {
       setClickNationalName(e.currentTarget.innerHTML);
       await selectStockData(stockId);
+      // setListening(false);
     }
   };
 
@@ -557,12 +558,12 @@ function Exchange(): JSX.Element {
       // Prepare candlestick data for the main chart
       const candleData: CandleData[] = stockChartResDto.map((data: SelectDataType) => ({
         date: new Date(data.date),
-        open: data.priceBefore,
-        high: data.stockHigh,
-        low: data.stockLow,
-        close: data.priceEnd,
-      })).reverse(); // Reverse to have oldest first
-
+        open: data.priceBefore || 0,  // Use 0 or other fallback if null
+        high: data.stockHigh || data.priceEnd,  // Fallback to priceEnd if stockHigh is null
+        low: data.stockLow || data.priceEnd,    // Fallback to priceEnd if stockLow is null
+        close: data.priceEnd
+      }));
+  
       setSelectChartData(candleData);
 
       // Define date range for auxiliary data
@@ -766,10 +767,6 @@ function Exchange(): JSX.Element {
                   <div className="flex justify-center w-full text-[1.6rem] font-bold px-[5%]">
                     <div className="flex items-start justify-center w-1/2">
                       <CountdownTimeMinute />
-                    </div>
-                  </div>
-                  <div className="flex justify-center w-full text-[0.7rem] text-[#FFFFFF] px-[5%] font-semibold">
-                    <div className="flex justify-center w-1/2 text-center space-x-9">
                       <span>초&nbsp;</span>
                     </div>
                   </div>
@@ -874,7 +871,7 @@ function Exchange(): JSX.Element {
                 )}
 
                 {/* International Market Exchange Rates */}
-                <div className="flex flex-col items-start w-full text-[1.4rem] bg-white mr-[2%] px-5 font-semibold drop-shadow-lg rounded-lg hover:scale-[1.02] border-2 border-white hover:border-blue-200 transition-all duration-300">
+                <div className="h-[300px] flex flex-col items-start w-full text-[1.4rem] bg-white mr-[2%] px-5 font-semibold drop-shadow-lg rounded-lg hover:scale-[1.02] border-2 border-white hover:border-blue-200 transition-all duration-300">
                   <div className="flex flex-col items-end justify-between w-full py-2">
                     {/* Header */}
                     <div className="flex justify-between w-full">
@@ -926,203 +923,6 @@ function Exchange(): JSX.Element {
                   </div>
                 </div>
               </div>
-
-              {/* Mobile View */}
-              <div className="flex flex-col w-[32%] space-y-3 justify-end items-start lg:hidden">
-                {/* Company Info, News, and Other Information */}
-                <div className="flex items-center w-full font-bold text-center bg-white border-2 rounded-md justify-evenly">
-                  <div
-                    aria-label="기업활동"
-                    className="w-[40%] border-r-2 text-[0.9rem] md:text-[1rem] transition-all duration-300 hover:scale-105 active:bg-[#EA455D] active:text-white hover:bg-[#EA455D] cursor-pointer hover:text-white hover:rounded-md"
-                    onClick={click}
-                  >
-                    <span>기업활동</span>
-                  </div>
-                  <div
-                    aria-label="신문"
-                    className="w-[30%] border-r-2 text-[0.9rem] md:text-[1rem] transition-all duration-300 hover:scale-105 active:bg-[#EA455D] active:text-white hover:bg-[#EA455D] cursor-pointer hover:text-white hover:rounded-md"
-                    onClick={click}
-                  >
-                    <span>신문</span>
-                  </div>
-                  <div
-                    aria-label="정보"
-                    className="w-[30%] text-[0.9rem] md:text-[1rem] transition-all duration-300 hover:scale-105 active:bg-[#EA455D] active:text-white hover:bg-[#EA455D] cursor-pointer hover:text-white hover:rounded-md"
-                    onClick={click}
-                  >
-                    <span>정보</span>
-                  </div>
-                </div>
-
-                {/* 갱신 시간 (Update Time) */}
-                <div className="flex flex-col w-1/2 py-1 text-white bg-black rounded-lg">
-                  <div className="flex justify-center w-full text-[0.85rem] px-[5%] font-semibold">
-                    <div className="w-1/2 text-center">
-                      <span className="text-[#00A3FF]">날짜 갱신</span>
-                    </div>
-                  </div>
-                  <div className={`flex justify-center w-full font-bold px-[5%] text-[1rem]`}>
-                    <div className="flex items-start justify-center w-1/2">
-                      <CountdownTimeMinute />
-                    </div>
-                  </div>
-                  <div className="flex justify-center w-full text-[0.6rem] text-[#FFFFFF] px-[5%] font-semibold">
-                    <div className="flex justify-center w-1/2 space-x-4 text-center">
-                      <span>초&nbsp;</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 주식 거래 (Stock Trading) */}
-                {isPossibleStockTime ? (
-                  <div className="flex flex-col items-start justify-start w-full px-3 py-1 space-y-1 lg:space-y-2">
-                    {/* Trading Header */}
-                    <div className="flex items-end justify-between w-full font-extrabold">
-                      <span className="text-[1rem] lg:text-[1.5rem]">주식 거래</span>
-                      <span className="text-[0.7rem]">금액: {afterMoney}원</span>
-                    </div>
-
-                    {/* Trading Input for Mobile */}
-                    <div className="flex lg:hidden justify-end items-center w-full bg-[#FFF2F0] border-[#ECB7BB] border-2 rounded-md pr-3">
-                      <input
-                        ref={inputRef2}
-                        aria-label="입력모바일"
-                        className="py-2 pr-1 text-end w-full bg-[#FFF2F0] outline-none"
-                        type="text"
-                        placeholder="0"
-                        maxLength={6}
-                        onChange={change}
-                      />
-                      <span>개</span>
-                    </div>
-
-                    {/* Trading Buttons */}
-                    <div className="flex items-center w-full text-center justify-evenly text-[0.6rem] lg:text-[1rem] text-[#464646]">
-                      <div
-                        aria-label="1개M"
-                        className="w-1/4 duration-200 border-r-2 hover:rounded-md hover:transition hover:scale-105 hover:font-bold hover:bg-[#EA455D] hover:text-white cursor-pointer"
-                        onClick={click}
-                      >
-                        <span>+1개</span>
-                      </div>
-                      <div
-                        aria-label="10개M"
-                        className="w-1/4 duration-200 border-r-2 hover:rounded-md hover:transition hover:scale-105 hover:font-bold hover:bg-[#EA455D] hover:text-white cursor-pointer"
-                        onClick={click}
-                      >
-                        <span>+10개</span>
-                      </div>
-                      <div
-                        aria-label="100개M"
-                        className="w-1/4 duration-200 border-r-2 hover:rounded-md hover:transition hover:scale-105 hover:font-bold hover:bg-[#EA455D] hover:text-white cursor-pointer"
-                        onClick={click}
-                      >
-                        <span>+100개</span>
-                      </div>
-                      <div
-                        aria-label="1000개M"
-                        className="w-1/4 duration-200 hover:rounded-md hover:transition hover:scale-105 hover:font-bold hover:bg-[#EA455D] hover:text-white cursor-pointer"
-                        onClick={click}
-                      >
-                        <span>+1000개</span>
-                      </div>
-                    </div>
-
-                    {/* Buy and Sell Buttons */}
-                    <div className="flex items-center justify-between w-full text-center text-[1rem] lg:text-[1.5rem] text-white font-semibold pt-1">
-                      {/* 매도 (Sell) */}
-                      <div
-                        aria-label="매도2"
-                        className={`w-[45%] py-1 bg-[#2C94EA] shadow-md rounded-xl shadow-gray-400 ${
-                          sseData && sseData.amount > 0 && inputRef.current && inputRef.current.value !== '0'
-                            ? 'cursor-pointer hover:bg-[#1860ef] hover:scale-105 transition-all duration-300'
-                            : 'disabled cursor-not-allowed'
-                        }`}
-                        onClick={click}
-                      >
-                        <span>매도</span>
-                      </div>
-
-                      {/* 매수 (Buy) */}
-                      <div
-                        aria-label="매수2"
-                        className={`w-[45%] py-1 bg-[#EA455D] shadow-md rounded-xl shadow-gray-400 ${
-                          parseInt(afterMoney.replace(/,/g, '')) <= parseInt(currentMoney.replace(/,/g, '')) &&
-                          inputRef.current &&
-                          inputRef.current.value !== '0'
-                            ? 'cursor-pointer hover:bg-[#f90025fd] hover:scale-105 transition-all duration-300'
-                            : 'disabled cursor-not-allowed'
-                        }`}
-                        onClick={click}
-                      >
-                        <span>매수</span>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  // Trading Disabled State
-                  <div className="h-[8.7rem] md:h-[9.2rem] w-full flex justify-center items-center bg-white rounded-lg">
-                    <div className="flex flex-col items-center justify-center w-full h-full font-semibold">
-                      <span className="text-[1rem] md:text-[1.1rem] space-x-1">
-                        <span className="text-blue-500">매도</span>&nbsp;/<span className="text-red-500">매수</span> 가능 시간
-                      </span>
-                      <span className="text-[1.1rem] md:text-[1.3rem]">AM 10:00 ~ PM 10:00</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* International Market Exchange Rates */}
-                <div className="flex flex-col items-start w-full text-[1.4rem] bg-white mr-[2%] px-5 font-semibold drop-shadow-lg rounded-lg hover:scale-[1.02] border-2 border-white hover:border-blue-200 transition-all duration-300">
-                  <div className="flex flex-col items-end justify-between w-full py-2">
-                    {/* Header */}
-                    <div className="flex justify-between w-full">
-                      <span>국제시장 환율</span>
-                      {clickNational === 0 && TagSetting(usdData)}
-                      {clickNational === 1 && TagSetting(jypData)}
-                      {clickNational === 2 && TagSetting(euroData)}
-                    </div>
-
-                    {/* National Selection Buttons */}
-                    <div className="flex justify-evenly w-full text-center border-2 rounded-md bg-[#EDEDED] text-[1.1rem] space-x-1 mt-1">
-                      <div
-                        aria-label="미국"
-                        className={`w-1/3 transition-all duration-300 rounded-md border-2 ${
-                          clickNational === 0 ? 'bg-white scale-105' : 'bg-[#EDEDED] scale-100'
-                        } hover:bg-white hover:scale-105 cursor-pointer border-[#EDEDED] hover:border-[#EDEDED]`}
-                        onClick={click}
-                      >
-                        <span>미국</span>
-                      </div>
-                      <div
-                        aria-label="일본"
-                        className={`w-1/3 transition-all duration-300 rounded-md border-2 ${
-                          clickNational === 1 ? 'bg-white scale-105' : 'bg-[#EDEDED] scale-100'
-                        } hover:bg-white hover:scale-105 cursor-pointer border-[#EDEDED] hover:border-[#EDEDED]`}
-                        onClick={click}
-                      >
-                        <span>일본</span>
-                      </div>
-                      <div
-                        aria-label="유럽연합"
-                        className={`w-1/3 transition-all duration-300 rounded-md border-2 ${
-                          clickNational === 2 ? 'bg-white scale-105' : 'bg-[#EDEDED] scale-100'
-                        } hover:bg-white hover:scale-105 cursor-pointer border-[#EDEDED] hover:border-[#EDEDED]`}
-                        onClick={click}
-                      >
-                        <span>유럽연합</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Chart for Selected National */}
-                  <div className="w-full h-[9rem] text-[0.75rem] font-medium">
-                    {clickNational === 0 && <ChartComponent data={transformChartDataTypeToCandleData(usdData)} height={200} />}
-                    {clickNational === 1 && <ChartComponent data={transformChartDataTypeToCandleData(jypData)} height={200} />}
-                    {clickNational === 2 && <ChartComponent data={transformChartDataTypeToCandleData(euroData)} height={200} />}
-                  </div>
-                </div>
-              </div>
-
               {/* Mobile View */}
               <div className="flex flex-col w-[32%] space-y-3 justify-end items-start lg:hidden">
                 {/* Company Info, News, and Other Information */}
