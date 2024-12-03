@@ -177,7 +177,7 @@ INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rat
         FROM stock_crawl
         WHERE stock_name = "G IT"
     );
-INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rate)
+INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rate,stock_high,stock_low,stock_volume)
     (
         SELECT stock_rate + IF(stock_state = "up", -stock_change, IF(stock_state = "down", stock_change, 0)),
                stock_rate,
@@ -192,7 +192,7 @@ INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rat
         FROM stock_crawl
         WHERE stock_name = "A 전자"
     );
-INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rate)
+INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rate,stock_high,stock_low,stock_volume)
     (
         SELECT stock_rate + IF(stock_state = "up", -stock_change, IF(stock_state = "down", stock_change, 0)),
                stock_rate,
@@ -207,7 +207,7 @@ INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rat
         FROM stock_crawl
         WHERE stock_name = "B 화학"
     );
-INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rate)
+INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rate,stock_high,stock_low,stock_volume)
     (
         SELECT stock_rate + IF(stock_state = "up", -stock_change, IF(stock_state = "down", stock_change, 0)),
                stock_rate,
@@ -222,7 +222,7 @@ INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rat
         FROM stock_crawl
         WHERE stock_name = "C 생명"
     );
-INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rate)
+INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rate,stock_high,stock_low,stock_volume)
     (
         SELECT stock_rate + IF(stock_state = "up", -stock_change, IF(stock_state = "down", stock_change, 0)),
                stock_rate,
@@ -237,7 +237,7 @@ INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rat
         FROM stock_crawl
         WHERE stock_name = "E 엔터"
     );
-INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rate)
+INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rate,stock_high,stock_low,stock_volume)
     (
         SELECT stock_rate + IF(stock_state = "up", -stock_change, IF(stock_state = "down", stock_change, 0)),
                stock_rate,
@@ -252,7 +252,7 @@ INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rat
         FROM stock_crawl
         WHERE stock_name = "F 전자"
     );
-INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rate)
+INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rate,stock_high,stock_low,stock_volume)
     (
         SELECT stock_rate + IF(stock_state = "up", -stock_change, IF(stock_state = "down", stock_change, 0)),
                stock_rate,
@@ -267,7 +267,7 @@ INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rat
         FROM stock_crawl
         WHERE stock_name = "G 화학"
     );
-INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rate)
+INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rate,stock_high,stock_low,stock_volume)
     (
         SELECT stock_rate + IF(stock_state = "up", -stock_change, IF(stock_state = "down", stock_change, 0)),
                stock_rate,
@@ -282,7 +282,7 @@ INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rat
         FROM stock_crawl
         WHERE stock_name = "H 생명"
     );
-INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rate)
+INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rate,stock_high,stock_low,stock_volume)
     (
         SELECT stock_rate + IF(stock_state = "up", -stock_change, IF(stock_state = "down", stock_change, 0)),
                stock_rate,
@@ -297,7 +297,7 @@ INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rat
         FROM stock_crawl
         WHERE stock_name = "I IT"
     );
-INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rate)
+INSERT INTO chart (price_before, price_end, date, company_id,sell,buy,change_rate,stock_high,stock_low,stock_volume)
     (
         SELECT stock_rate + IF(stock_state = "up", -stock_change, IF(stock_state = "down", stock_change, 0)),
                stock_rate,

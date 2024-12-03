@@ -1,15 +1,15 @@
--- market table init
-DROP TABLE IF EXISTS market;
-CREATE TABLE market (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    start_at DATE NOT NULL,
-    end_at DATE NOT NULL,
-    game_date DATE NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-INSERT INTO market(id, created_at, updated_at, end_at, game_date, start_at) VALUES
-                                                 (1, '2024-11-27 12:42:00.059000', '2024-11-28 10:44:00.027000', '2024-10-31', '2024-01-01',  '2024-01-01');
+-- -- market table init
+-- DROP TABLE IF EXISTS market;
+-- CREATE TABLE market (
+--     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+--     start_at DATE NOT NULL,
+--     end_at DATE NOT NULL,
+--     game_date DATE NOT NULL,
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- INSERT INTO market(id, created_at, updated_at, end_at, game_date, start_at) VALUES
+--                                                  (1, '2024-11-27 12:42:00.059000', '2024-11-28 10:44:00.027000', '2024-10-31', '2024-01-01',  '2024-01-01');
 
 -- company init
 DROP TABLE IF EXISTS company;
@@ -31,21 +31,21 @@ INSERT INTO company(id, is_used, kind, name) VALUES
                                                  (9,'Y', 'IT', 'SK텔레콤'),
                                                  (10,'Y', '엔터', 'HYBE엔터');
 
--- stock table init
-DROP TABLE IF EXISTS stock;
-CREATE TABLE stock (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    average BIGINT NOT NULL,
-    company_id BIGINT NOT NULL,
-    market_id BIGINT NOT NULL,
-    CONSTRAINT fk_stock_company FOREIGN KEY (company_id) REFERENCES company(id) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT fk_stock_market FOREIGN KEY (market_id) REFERENCES market(id) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-INSERT INTO stock(id, average, company_id, market_id) VALUES
-                                                 (1, 182269, 1, 1),
-                                                 (2, 74979, 2, 1),
-                                                 (3, 188341, 4, 1),
-                                                 (4, 197067, 10, 1);
+-- -- stock table init
+-- DROP TABLE IF EXISTS stock;
+-- CREATE TABLE stock (
+--     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+--     average BIGINT NOT NULL,
+--     company_id BIGINT NOT NULL,
+--     market_id BIGINT NOT NULL,
+--     CONSTRAINT fk_stock_company FOREIGN KEY (company_id) REFERENCES company(id) ON DELETE CASCADE ON UPDATE CASCADE,
+--     CONSTRAINT fk_stock_market FOREIGN KEY (market_id) REFERENCES market(id) ON DELETE CASCADE ON UPDATE CASCADE
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- INSERT INTO stock(id, average, company_id, market_id) VALUES
+--                                                  (1, 182269, 1, 1),
+--                                                  (2, 74979, 2, 1),
+--                                                  (3, 188341, 4, 1),
+--                                                  (4, 197067, 10, 1);
 
 -- asset init
 DROP TABLE IF EXISTS asset;
