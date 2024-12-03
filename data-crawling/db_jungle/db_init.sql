@@ -9,7 +9,7 @@ CREATE TABLE market (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 INSERT INTO market(id, created_at, updated_at, end_at, game_date, start_at) VALUES
-                                                 (1, '2024-11-27 12:42:00.059000', '2024-11-28 10:44:00.027000', '2024-10-31', '2024-06-01',  '2024-01-01');
+                                                 (1, '2024-11-27 12:42:00.059000', '2024-11-28 10:44:00.027000', '2024-10-31', '2024-01-01',  '2024-01-01');
 
 -- company init
 DROP TABLE IF EXISTS company;
@@ -22,13 +22,13 @@ CREATE TABLE company (
 INSERT INTO company(id, is_used, kind, name) VALUES
                                                  (1,'Y', 'IT', '네이버'),
                                                  (2,'Y', '전자', '삼성전자'),
-                                                 (3,'N', '화학', 'LG화학'),
+                                                 (3,'Y', '화학', 'LG화학'),
                                                  (4,'Y', '생명', '셀트리온'),
-                                                 (5,'N', '엔터', 'SM엔터'),
-                                                 (6,'N', '전자', 'LG전자'),
-                                                 (7,'N', '화학', '롯테케미칼'),
-                                                 (8,'N', '생명', '녹십자'),
-                                                 (9,'N', 'IT', 'SK텔레콤'),
+                                                 (5,'Y', '엔터', 'SM엔터'),
+                                                 (6,'Y', '전자', 'LG전자'),
+                                                 (7,'Y', '화학', '롯테케미칼'),
+                                                 (8,'Y', '생명', '녹십자'),
+                                                 (9,'Y', 'IT', 'SK텔레콤'),
                                                  (10,'Y', '엔터', 'HYBE엔터');
 
 -- stock table init

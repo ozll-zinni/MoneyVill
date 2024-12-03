@@ -14,9 +14,9 @@ from urllib.request import Request, urlopen
 def get_db_connection():
     """Reusable database connection function."""
     return pymysql.connect(
-        host="localhost",
-        user="ssafy",
-        password="ssafy",
+        host="database-2.cz4eukq2qs6a.ap-northeast-2.rds.amazonaws.com",
+        user="admin",
+        password="15Ovn241Pcd4eSvD3Ljn",
         db="modoostock",
         charset="utf8mb4",
         autocommit=True,
@@ -248,5 +248,5 @@ def execute_sql_file(sql_file):
         con.close()
 
 
-execute_sql_file("db_jungle/db_init.sql")
-execute_sql_file("db_jungle/db_processing.sql")
+# execute_sql_file("db_jungle/db_init.sql")
+# execute_sql_file("db_jungle/db_processing.sql")
