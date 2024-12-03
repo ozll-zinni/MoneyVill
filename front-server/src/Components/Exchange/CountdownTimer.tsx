@@ -14,6 +14,8 @@ function CountdownTimer({ setIsPossibleStockTime, isPossibleStockTime }: Countdo
     const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
     const dayOfWeek = daysOfWeek[d.getDay()];
     const hours = d.getHours();
+    const minutes = d.getMinutes();
+    const seconds = d.getSeconds();
 
     // if (dayOfWeek === '일') {
     //   setIsPossibleStockTime(true);
@@ -62,20 +64,20 @@ function CountdownTimer({ setIsPossibleStockTime, isPossibleStockTime }: Countdo
     //   }
     // }
 
-    if (hours >= 0 && hours < 23) {
+    if (minutes < 58) {
       if (!isPossibleStockTime) {
         setIsPossibleStockTime(true);
       }
-      return `${(22 - hours - 1 + 12).toString()} : ${
-        (60 - d.getMinutes() - 1).toString().length === 1 ? `0${60 - d.getMinutes() - 1}` : 60 - d.getMinutes() - 1
+      return `${
+        (60 - minutes - 1).toString().length === 1 ? `0${60 - minutes - 1}` : 60 - minutes - 1
       } : ${
-        (60 - d.getSeconds() - 1).toString().length === 1 ? `0${60 - d.getSeconds() - 1}` : 60 - d.getSeconds() - 1
+        (60 - seconds - 1).toString().length === 1 ? `0${60 - seconds - 1}` : 60 - seconds - 1
       }`;
     } else {
       if (isPossibleStockTime) {
-        setIsPossibleStockTime(true);
+        setIsPossibleStockTime(false);
       }
-      return '24 : 00 : 00';
+      return '60 : 00';
     }
 
   };

@@ -12,6 +12,7 @@ import ChartComponent from './Chart';
 import { useAppDispatch, useAppSelector } from 'Store/hooks';
 import { toast } from 'react-toastify';
 import CountdownTimeMinute from './CountdownTimeMinute';
+import CountdownTimer from './CountdownTimer';
 import IRModal from './IRModal';
 import StockTradeModal from './StockTradeModal';
 import Loading from 'Components/Common/Loading';
@@ -89,7 +90,7 @@ function Exchange(): JSX.Element {
   const errorFxSound = new Audio(errorFx);
 
   // State Variables
-  const [isPossibleStockTime, setIsPossibleStockTime] = useState<boolean>(true);
+  const [isPossibleStockTime, setIsPossibleStockTime] = useState<boolean>(false);
   const [isNewsClick, setIsNewsClick] = useState<boolean>(false);
   const [isMobileInfo, setIsMobileInfo] = useState<boolean>(false);
   const [isIRClick, setIsIRClick] = useState<boolean>(false);
@@ -758,20 +759,38 @@ function Exchange(): JSX.Element {
               {/* Right Side - Trading and Auxiliary Charts */}
               <div className="hidden flex-col w-[28%] space-y-3 justify-end items-start lg:flex">
                 {/* 갱신 시간 (Update Time) */}
-                <div className="flex flex-col w-1/2 py-1 text-white bg-black rounded-lg">
-                  <div className="flex justify-center w-full text-[1.2rem] px-[5%] font-semibold">
+                <div className="flex flex-col w-full py-1 text-white bg-black rounded-lg">
+                  <div className="flex justify-between w-full text-[1.2rem] px-[5%] font-semibold">
+                    <div className="w-1/2 text-center">
+                      <span className="text-[#FF5151]">종목 갱신</span>
+                    </div>
                     <div className="w-1/2 text-center">
                       <span className="text-[#00A3FF]">날짜 갱신</span>
                     </div>
                   </div>
-                  <div className="flex justify-center w-full text-[1.6rem] font-bold px-[5%]">
+                  <div className="flex justify-between w-full text-[1.6rem] font-bold px-[5%]">
+                    <div className="flex items-start justify-center w-1/2">
+                      <CountdownTimer
+                        setIsPossibleStockTime={setIsPossibleStockTime}
+                        isPossibleStockTime={isPossibleStockTime}
+                      />
+                    </div>
                     <div className="flex items-start justify-center w-1/2">
                       <CountdownTimeMinute />
+                    </div>
+                  </div>
+                  <div className="flex justify-between w-full text-[0.7rem] text-[#FFFFFF] px-[5%] font-semibold">
+                    <div className="flex justify-center w-1/2 text-center space-x-9">
+                      <span>시간&nbsp;</span>
+                      <span>분&nbsp;</span>
+                      <span>초&nbsp;</span>
+                    </div>
+                    <div className="flex justify-center w-1/2 text-center space-x-9">
+                      <span>&ensp;분&nbsp;</span>
                       <span>초&nbsp;</span>
                     </div>
                   </div>
                 </div>
-
                 {/* 주식 거래 (Stock Trading) */}
                 {isPossibleStockTime ? (
                   <div className="flex flex-col items-start justify-start w-full px-3 py-1 space-y-1 lg:space-y-2">
@@ -951,24 +970,38 @@ function Exchange(): JSX.Element {
                 </div>
 
                 {/* 갱신 시간 (Update Time) */}
-                <div className="flex flex-col w-1/2 py-1 text-white bg-black rounded-lg">
-                  <div className="flex justify-center w-full text-[0.85rem] px-[5%] font-semibold">
+                <div className="flex flex-col w-full py-1 text-white bg-black rounded-lg">
+                  <div className="flex justify-between w-full text-[0.85rem] px-[5%] font-semibold">
+                    <div className="w-1/2 text-center">
+                      <span className="text-[#FF5151]">종목 갱신</span>
+                    </div>
                     <div className="w-1/2 text-center">
                       <span className="text-[#00A3FF]">날짜 갱신</span>
                     </div>
                   </div>
-                  <div className={`flex justify-center w-full font-bold px-[5%] text-[1rem]`}>
+                  <div className={`flex justify-between w-full font-bold px-[5%] text-[1rem]`}>
+                    <div className="flex items-start justify-center w-1/2">
+                      <CountdownTimer
+                        setIsPossibleStockTime={setIsPossibleStockTime}
+                        isPossibleStockTime={isPossibleStockTime}
+                      />
+                    </div>
                     <div className="flex items-start justify-center w-1/2">
                       <CountdownTimeMinute />
                     </div>
                   </div>
-                  <div className="flex justify-center w-full text-[0.6rem] text-[#FFFFFF] px-[5%] font-semibold">
+                  <div className="flex justify-between w-full text-[0.6rem] text-[#FFFFFF] px-[5%] font-semibold">
                     <div className="flex justify-center w-1/2 space-x-4 text-center">
+                      <span>시간</span>
+                      <span>&nbsp;분&ensp;</span>
+                      <span>초&ensp;</span>
+                    </div>
+                    <div className="flex justify-center w-1/2 space-x-4 text-center">
+                      <span>&ensp;분&ensp;</span>
                       <span>초&nbsp;</span>
                     </div>
                   </div>
                 </div>
-
                 {/* 주식 거래 (Stock Trading) */}
                 {isPossibleStockTime ? (
                   <div className="flex flex-col items-start justify-start w-full px-3 py-1 space-y-1 lg:space-y-2">

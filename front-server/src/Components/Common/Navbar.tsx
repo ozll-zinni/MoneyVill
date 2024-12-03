@@ -194,12 +194,12 @@ const getIndex = useCallback(() => {
   const secondsElapsed = Math.floor(diff / 1000); // 경과 시간(초)
   
   // 20초마다 index 증가
-  index = Math.floor(secondsElapsed / 20);
+  index = Math.floor(secondsElapsed / 30);
 
     // 받아온 데이터 세팅
     dispatch(getCurrentDataIndex(index));
   }, [dispatch]);
-  
+
   useEffect(() => {
     const now = new Date();
     const hour = now.getHours();
