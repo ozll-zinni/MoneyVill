@@ -1,36 +1,91 @@
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ComposedChart } from 'recharts';
+// Chart.tsx
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  ChartCanvas,
+  Chart as FinancialChart,
+  CandlestickSeries,
+  XAxis,
+  YAxis,
+  CrossHairCursor,
+  MouseCoordinateX,
+  MouseCoordinateY,
+} from 'react-financial-charts';
+import { scaleTime, scaleLinear } from 'd3-scale';
+import { format } from 'd3-format';
+import { extent } from 'd3-array';
+import { timeFormat } from 'd3-time-format';
+import { CandleData } from '../../types/types';
 
-function Chart({ data }: any) {
-  const formatYAxis = (tickItem: any) => tickItem.toLocaleString() + '원';
-  const formatTooltip = (tickItem: any) => tickItem.toLocaleString();
+interface ChartProps {
+  data: CandleData[];
+  height: number;
+}
+
+const ChartComponent: React.FC<ChartProps> = ({ data, height }) => {
+  const chartRef = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState<number>(window.innerWidth);
+
+  // Handle responsiveness using ResizeObserver
+  useEffect(() => {
+    const handleResize = (entries: ResizeObserverEntry[]) => {
+      for (let entry of entries) {
+        if (entry.target === chartRef.current && entry.contentRect.width) {
+          setWidth(entry.contentRect.width);
+        }
+      }
+    };
+
+    const resizeObserver = new ResizeObserver(handleResize);
+    if (chartRef.current) {
+      resizeObserver.observe(chartRef.current);
+    }
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  // Sort the data by date to ensure chronological order and filter out invalid dates
+  const sortedData = [...data]
+    .filter(d => d.date instanceof Date && !isNaN(d.date.getTime()))
+    .sort((a, b) => a.date.getTime() - b.date.getTime());
+
+  if (sortedData.length === 0) {
+    console.warn('No valid data available for the chart.');
+    return <div>No valid data available for the chart.</div>;
+  }
+
+  // Define scales
+  const xScale = scaleTime();
+  const yScale = scaleLinear();
+
+  // Determine the extents for the x-axis
+  const xExtents = extent(sortedData, (d) => d.date) as [Date, Date];
 
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <AreaChart
-        width={500}
-        height={400}
-        data={data}
-        margin={{
-          top: 10,
-          right: 30,
-          left: 0,
-          bottom: 0
-        }}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
-        <YAxis
-          type="number"
-          label={{ value: '원', offset: 30, angle: 0, position: 'top' }}
-          tickFormatter={formatYAxis}
-        />
-        <Tooltip
-          cursor={{ strokeDasharray: '3 3' }}
-          formatter={(value, name) => (name === '종가' ? value.toLocaleString() + '원' : value)}
-        />
-        <Area type="monotone" dataKey="종가" stackId="1" stroke="#03aa0e" fill="#c2eec5" />
-        <Area type="monotone" dataKey="일자" stackId="1" stroke="#0cb2be" fill="#c2eec5" />
-      </AreaChart>
-    </ResponsiveContainer>
+    <div ref={chartRef} style={{ width: '100%', height: `${height}px` }}>
+      <ChartCanvas
+        height={height}
+        width={width}
+        ratio={1}
+        margin={{ left: 50, right: 50, top: 10, bottom: 30 }}
+        data={sortedData}
+        seriesName="Data"
+        xAccessor={(d) => d.date}
+        xScale={xScale}
+        xExtents={xExtents}
+      >
+        <FinancialChart id={1} yExtents={[20000, 100000]}>
+          <XAxis />
+          <YAxis />
+          <MouseCoordinateX displayFormat={timeFormat('%Y-%m-%d')} />
+          <MouseCoordinateY displayFormat={format('.2f')} />
+          <CandlestickSeries />
+        </FinancialChart>
+        <CrossHairCursor />
+      </ChartCanvas>
+    </div>
   );
-}
-export default Chart;
+};
+
+export default ChartComponent;
