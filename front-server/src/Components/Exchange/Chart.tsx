@@ -36,21 +36,27 @@ const ChartComponent: React.FC<ChartProps> = ({ data, height }) => {
   const [width, setWidth] = useState<number>(window.innerWidth);
 
   useEffect(() => {
-    const handleResize = (entries: ResizeObserverEntry[]) => {
-      for (let entry of entries) {
-        if (entry.target === chartRef.current && entry.contentRect.width) {
-          setWidth(entry.contentRect.width);
-        }
+    const updateChartSize = () => {
+      if (chartRef.current) {
+        setWidth(chartRef.current.clientWidth);
       }
     };
 
-    const resizeObserver = new ResizeObserver(handleResize);
+    updateChartSize();
+
+    const resizeObserver = new ResizeObserver(() => {
+      updateChartSize();
+    });
+
     if (chartRef.current) {
       resizeObserver.observe(chartRef.current);
     }
 
+    window.addEventListener("resize", updateChartSize);
+
     return () => {
       resizeObserver.disconnect();
+      window.removeEventListener("resize", updateChartSize);
     };
   }, []);
 
