@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
 import {
   ChartCanvas,
   Chart as FinancialChart,
@@ -21,6 +21,7 @@ interface ChartProps {
   data: CandleData[];
   height: number;
 }
+
 interface ChartData extends CandleData {
   ema12?: number;
   ema26?: number;
@@ -33,68 +34,84 @@ interface ChartData extends CandleData {
 
 const ChartComponent: React.FC<ChartProps> = ({ data, height }) => {
   const chartRef = useRef<HTMLDivElement>(null);
-  const [width, setWidth] = useState<number>(window.innerWidth);
+  const [dimensions, setDimensions] = useState({ width: 0, height });
+  const [isClientRendered, setIsClientRendered] = useState(false);
 
+  // 클라이언트 사이드 렌더링 확인
   useEffect(() => {
+    setIsClientRendered(true);
+  }, []);
+
+  // useLayoutEffect를 사용하여 DOM 업데이트 전에 크기 계산
+  useLayoutEffect(() => {
+    if (!isClientRendered) return;
+
     const updateChartSize = () => {
       if (chartRef.current) {
-        setWidth(chartRef.current.clientWidth);
+        const { width } = chartRef.current.getBoundingClientRect();
+        setDimensions(prev => ({
+          ...prev,
+          width: Math.floor(width)  // 정수값으로 반올림하여 사용
+        }));
       }
     };
 
+    // 초기 크기 설정
     updateChartSize();
 
-    const resizeObserver = new ResizeObserver(() => {
-      updateChartSize();
+    // ResizeObserver 설정
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width } = entry.contentRect;
+        setDimensions(prev => ({
+          ...prev,
+          width: Math.floor(width)
+        }));
+      }
     });
 
     if (chartRef.current) {
       resizeObserver.observe(chartRef.current);
     }
 
-    window.addEventListener("resize", updateChartSize);
+    // 윈도우 리사이즈 이벤트 리스너
+    window.addEventListener('resize', updateChartSize);
 
     return () => {
       resizeObserver.disconnect();
-      window.removeEventListener("resize", updateChartSize);
+      window.removeEventListener('resize', updateChartSize);
     };
-  }, []);
+  }, [isClientRendered]);
 
+  // 데이터 처리 및 계산 로직
   const sortedData = data
     .filter((d) => d.date instanceof Date && !isNaN(d.date.getTime()))
     .sort((a, b) => a.date.getTime() - b.date.getTime());
 
-  if (sortedData.length === 0) {
-    console.warn("No valid data available for the chart.");
-    return <div>No valid data available for the chart.</div>;
+  if (sortedData.length === 0 || !isClientRendered || dimensions.width === 0) {
+    return <div ref={chartRef} style={{ width: "100%", height: `${height}px` }}>Loading...</div>;
   }
 
+  // 기존의 차트 계산 로직...
   const ema12 = ema()
     .id(1)
     .options({ windowSize: 12 })
-    .merge((d: ChartData, c: number) => {
-      d.ema12 = c;
-    })
+    .merge((d: ChartData, c: number) => { d.ema12 = c; })
     .accessor((d: ChartData) => d.ema12);
 
   const ema26 = ema()
     .id(2)
     .options({ windowSize: 26 })
-    .merge((d: ChartData, c: number) => {
-      d.ema26 = c;
-    })
+    .merge((d: ChartData, c: number) => { d.ema26 = c; })
     .accessor((d: ChartData) => d.ema26);
 
   const elder = elderRay();
-
   const calculatedData = elder(ema26(ema12(sortedData)));
 
-  const ScaleProvider = discontinuousTimeScaleProviderBuilder().inputDateAccessor(
-    (d) => d.date
-  );
-  const { data: chartData, xScale, xAccessor, displayXAccessor } = ScaleProvider(
-    calculatedData
-  );
+  const ScaleProvider = discontinuousTimeScaleProviderBuilder()
+    .inputDateAccessor((d) => d.date);
+    
+  const { data: chartData, xScale, xAccessor, displayXAccessor } = ScaleProvider(calculatedData);
 
   const xExtents = [
     xAccessor(chartData[0]),
@@ -102,16 +119,18 @@ const ChartComponent: React.FC<ChartProps> = ({ data, height }) => {
   ];
 
   const pricesDisplayFormat = format(".0f");
-  const volumeFormat = format(".2s"); 
+  const volumeFormat = format(".2s");
   const timeDisplayFormat = timeFormat("%Y-%m-%d");
 
-  const volumeColor = (d: ChartData) => (d.close > d.open ? "rgba(38, 166, 154, 0.3)" : "rgba(239, 83, 80, 0.3)");
+  const volumeColor = (d: ChartData) => (
+    d.close > d.open ? "rgba(38, 166, 154, 0.3)" : "rgba(239, 83, 80, 0.3)"
+  );
 
   return (
     <div ref={chartRef} style={{ width: "100%", height: `${height}px` }}>
       <ChartCanvas
         height={height}
-        width={width}
+        width={dimensions.width}
         ratio={1}
         margin={{ left: 0, right: 60, top: 10, bottom: 30 }}
         data={chartData}
