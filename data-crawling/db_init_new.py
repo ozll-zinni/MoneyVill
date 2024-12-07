@@ -17,9 +17,9 @@ def get_db_connection():
         # host="database-2.cz4eukq2qs6a.ap-northeast-2.rds.amazonaws.com",
         host="localhost",
         # user="admin",
-        user="ssafy",
+        user="root",
         # password="15Ovn241Pcd4eSvD3Ljn",
-        password="ssafy",
+        password="e3pooq^^",
         db="modoostock",
         charset="utf8mb4",
         autocommit=True,
@@ -164,6 +164,7 @@ def initialize_stock_table(table_name):
                 stock_low INT NOT NULL,
                 stock_high INT NOT NULL,
                 stock_volume INT NOT NULL,
+                stock_dividend INT NOT NULL,
                 stock_change_rate FLOAT NOT NULL
             ) CHARSET=utf8mb4;"""
             )
