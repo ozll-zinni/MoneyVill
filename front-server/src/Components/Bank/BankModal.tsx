@@ -3,6 +3,7 @@ import { useAppSelector } from 'Store/hooks';
 import BankSection1 from './BankSection1';
 import BankSection2 from './BankSection2';
 import BankSection3 from './BankSection3';
+import BankSection4 from './BankSection4';
 
 interface ModalType {
   clickNum: number;
@@ -61,6 +62,17 @@ function BankModal({
         )}
         {clickNum === 3 && (
           <BankSection3
+            setIsClick={setIsClick}
+            currentMoney={currentMoney}
+            IntAfterCurrentMoney={parseInt(money)}
+            clickBtn={clickBtn}
+            cancelClickBtn={cancelClickBtn}
+            successFxSound={successFxSound}
+            errorFxSound={errorFxSound}
+          />
+        )}
+        {clickNum === 4 && (
+          <BankSection4
             setIsClick={setIsClick}
             currentMoney={currentMoney}
             IntAfterCurrentMoney={parseInt(money)}

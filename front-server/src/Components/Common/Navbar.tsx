@@ -195,6 +195,8 @@ const getIndex = useCallback(() => {
   
   // 20초마다 index 증가
   index = Math.floor(secondsElapsed / 30);
+  // 현재 gamestart 5월 1일로 설정해서 
+  index += 82;
 
     // 받아온 데이터 세팅
     dispatch(getCurrentDataIndex(index));

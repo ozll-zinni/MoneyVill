@@ -74,6 +74,21 @@ interface ReturnBankListInterFace {
   result: string;
 }
 
+interface ReturnLoanInterFace {
+  data: {
+    totalAmount: number;
+  };
+  result: string;
+}
+
+interface ReturnLoanListInterFace {
+  data: Array<{
+    id: number;
+    amount: number;
+  }>;
+  result: string;
+}
+
 interface ReturnRankListInterFace {
   data: Array<{
     nickname: string;
@@ -398,6 +413,7 @@ export const Api = createApi({
   tagTypes: [
     'UserApi',
     'BankApi',
+    'LoanApi',
     'StockApi',
     'NewsApi',
     'MypageApi',
@@ -506,60 +522,59 @@ export const Api = createApi({
     }),
 
     // ------------- 은행 -------------
-
-    // 1. 내 통장 잔고
     getBank: builder.query<ReturnBankInterFace, string>({
       query: () => `/bank`,
-      providesTags: (result, error, arg) => {
-        return [{ type: 'BankApi' }, { type: 'UserApi' }];
-      }
+      providesTags: [{ type: 'BankApi' }, { type: 'UserApi' }]
     }),
 
-    // 2. 예금 하기
     postBank: builder.mutation<ReturnBasicInterFace, number>({
-      query: (price) => {
-        return {
-          url: `/bank`,
-          method: 'POST',
-          body: {
-            price: price
-          }
-        };
-      },
-      invalidatesTags: (result, error, arg) => [{ type: 'BankApi' }, { type: 'UserApi' }]
+      query: (price) => ({
+        url: `/bank`,
+        method: 'POST',
+        body: { price }
+      }),
+      invalidatesTags: [{ type: 'BankApi' }, { type: 'UserApi' }]
     }),
 
-    // 3. 예금 리스트
     getBankList: builder.query<ReturnBankListInterFace, string>({
       query: () => `/bank/list`,
-      providesTags: (result, error, arg) => {
-        return [{ type: 'BankApi' }, { type: 'UserApi' }];
-      }
+      providesTags: [{ type: 'BankApi' }, { type: 'UserApi' }]
     }),
 
-    // 4. 출금 하기
     deleteBank: builder.mutation<ReturnBasicInterFace, number>({
-      query: (bankId) => {
-        return {
-          url: `/bank/${bankId}`,
-          method: 'Delete'
-        };
-      },
-      invalidatesTags: (result, error, arg) => [{ type: 'BankApi' }, { type: 'UserApi' }]
+      query: (bankId) => ({
+        url: `/bank/${bankId}`,
+        method: 'DELETE'
+      }),
+      invalidatesTags: [{ type: 'BankApi' }, { type: 'UserApi' }]
     }),
 
-    // 5. 송금 하기
-    postBankTransfer: builder.mutation<ReturnBasicInterFace, { money: number; receiver: string }>({
-      query: (body) => {
-        // console.log(body);
+    // ------------- 대출 -------------
+    getLoan: builder.query<ReturnLoanInterFace, string>({
+      query: () => `/loan`,
+      providesTags: [{ type: 'LoanApi' }, { type: 'UserApi' }]
+    }),
 
-        return {
-          url: `/bank/transfer`,
-          method: 'Post',
-          body: body
-        };
-      },
-      invalidatesTags: (result, error, arg) => [{ type: 'BankApi' }, { type: 'UserApi' }]
+    postLoan: builder.mutation<ReturnBasicInterFace, { amount: number }>({
+      query: (body) => ({
+        url: `/loan`,
+        method: 'POST',
+        body
+      }),
+      invalidatesTags: [{ type: 'LoanApi' }]
+    }),
+
+    getLoanList: builder.query<ReturnLoanListInterFace, string>({
+      query: () => `/loan/list`,
+      providesTags: [{ type: 'LoanApi' }]
+    }),
+
+    postRepayment: builder.mutation<ReturnBasicInterFace, { loanId: number }>({
+      query: ({ loanId }) => ({
+        url: `/loan/${loanId}`,
+        method: 'DELETE'
+      }),
+      invalidatesTags: [{ type: 'LoanApi' }]
     }),
 
     // ------------- 뉴스 -------------
@@ -988,7 +1003,13 @@ export const {
   usePostBankMutation,
   useGetBankListQuery,
   useDeleteBankMutation,
-  usePostBankTransferMutation,
+  
+  useGetLoanQuery,
+  usePostLoanMutation,
+  useGetLoanListQuery,
+  usePostRepaymentMutation,
+  // usePostBankLoanMutation,
+  // usePostBankRepaymentMutation,
 
   // ------------- 뉴스 -------------
   useGetNewsInfoQuery,
