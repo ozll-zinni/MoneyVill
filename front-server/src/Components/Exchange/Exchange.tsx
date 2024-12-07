@@ -689,6 +689,13 @@ function Exchange(): JSX.Element {
                       <span className="text-[1.7rem]">나의 투자 현황</span>
                       <span className="text-[1.3rem]">{clickNationalName}</span>
                     </div>
+                    <div className="flex items-end space-x-3">
+                      {/* 배당금 표시 영역 */}
+                      <span className="text-[1rem]">주당 배당금: </span>
+                      <span className="text-[1rem] font-bold text-[#2C94EA]">
+                        {sseData?.stockChartResDto.reduce((acc, item) => acc + (item.stockDividend || 0), 0).toLocaleString()}원
+                      </span>
+                    </div>
                   </div>
 
                   {/* Investment Data */}
