@@ -162,6 +162,7 @@ interface ReturnStockListInterFace {
       stockId: number;
       kind: string;
       price: number;
+      companyName: string;
     }>;
     usd: Array<{
       nationalCode: string;

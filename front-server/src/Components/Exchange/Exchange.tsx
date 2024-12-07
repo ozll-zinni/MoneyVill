@@ -471,7 +471,7 @@ function Exchange(): JSX.Element {
           await selectStockData(data.stockList[0].stockId);
           const firstDataName = data.stockList[0].kind;
           SetSelectIRData(irData[firstDataName]);
-          setClickNationalName(data.stockList[0].kind);
+          setClickNationalName(data.stockList[0].companyName);
         }
       } catch (error) {
         toast.error('주식 데이터를 불러오는 데 실패했습니다.');
@@ -494,18 +494,27 @@ function Exchange(): JSX.Element {
     }
   };
 
-  // ===========================
-  // Handle Stock Click
-  // ===========================
   const clickStock = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    
+    // 가져온 stockId를 파싱
     const stockId = parseInt(e.currentTarget.getAttribute('aria-label') || '0');
-    if (stockId) {
-      setClickNationalName(e.currentTarget.innerHTML);
-      await selectStockData(stockId);
-      // setListening(false);
+    if (stockId && lazyGetStockData?.stockList) {
+      // 해당 stockId와 매칭되는 주식을 찾음
+      const selectedStock = lazyGetStockData.stockList.find(
+        (stock: any) => stock.stockId === stockId
+      );
+      
+      if (selectedStock) {
+        // companyName을 설정
+        setClickNationalName(selectedStock.companyName);
+        
+        // 추가적으로 필요한 작업 수행
+        await selectStockData(stockId);
+      }
     }
   };
+  
 
   // ===========================
   // Tag Setting for Display
@@ -595,7 +604,7 @@ function Exchange(): JSX.Element {
 
       // If no national name is set, default to the first in the list
       if (clickNationalName === '' && stockList.length > 0) {
-        setClickNationalName(stockList[0].kind);
+        setClickNationalName(stockList[0].companyName);
       }
     }
   }, [sseData, clickNationalName, lazyGetStockData, irData]);
