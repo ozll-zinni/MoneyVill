@@ -39,6 +39,7 @@ interface SelectDataType {
   priceEnd: number;
   stockHigh: number;
   stockLow: number;
+  stockDividend: number;
 }
 
 // Interface for SSE Data
@@ -107,6 +108,7 @@ function Exchange(): JSX.Element {
     priceEnd: 0,
     stockHigh: 0,
     stockLow: 0,
+    stockDividend: 0,
   });
 
   // Chart Data States
