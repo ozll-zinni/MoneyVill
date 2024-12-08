@@ -609,12 +609,6 @@ function Exchange(): JSX.Element {
     }
   }, [sseData, clickNationalName, lazyGetStockData, irData]);
 
-  useEffect(() => {
-    if (sseData?.stockChartResDto) {
-      console.log('SSE Data (stockChartResDto):', JSON.stringify(sseData?.stockChartResDto, null, 2));
-    }
-  }, [sseData]);
-
   return (
     <>
       {/* Stock Trade Modal */}
