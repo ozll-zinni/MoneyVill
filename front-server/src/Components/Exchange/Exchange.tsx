@@ -609,6 +609,12 @@ function Exchange(): JSX.Element {
     }
   }, [sseData, clickNationalName, lazyGetStockData, irData]);
 
+  useEffect(() => {
+    if (sseData?.stockChartResDto) {
+      console.log('SSE Data (stockChartResDto):', JSON.stringify(sseData?.stockChartResDto, null, 2));
+    }
+  }, [sseData]);
+
   return (
     <>
       {/* Stock Trade Modal */}
@@ -697,72 +703,84 @@ function Exchange(): JSX.Element {
                     <div className="flex items-end space-x-3">
                       <span className="text-[1.7rem]">나의 투자 현황</span>
                       <span className="text-[1.3rem]">{clickNationalName}</span>
+                      {/* 시세 손익 */}
+                      <div className={`flex items-end space-x-1 ${selectRevenueData > 0 ? 'text-red-500' : 'text-blue-500'}`}>
+                        <span className={`text-[1.3rem]`}>{selectRevenueData.toLocaleString()}원</span>
+                        <span className="text-[0.9rem]">({sseData?.rate.toFixed(2)}%)</span>
+                      </div>
                     </div>
-                    <div className="flex items-end space-x-3">
-                      {/* 배당금 표시 영역 */}
+                    <div className="flex items-end space-x-2">
+                    {/* 배당금 표시 영역 */}
                       <span className="text-[1rem]">주당 배당금: </span>
                       <span className="text-[1rem] font-bold text-[#2C94EA]">
-                        {sseData?.stockChartResDto.reduce((acc, item) => acc + (item.stockDividend || 0), 0).toLocaleString()}원
+                        {(
+                          sseData?.stockChartResDto[sseData.stockChartResDto.length - 1]?.stockDividend || 0
+                        ).toLocaleString()}원
                       </span>
                     </div>
                   </div>
 
                   {/* Investment Data */}
                   <div className="flex items-end justify-between w-full text-[#9B9B9B] font-bold">
-                    <div className={`flex items-end space-x-1 ${selectRevenueData > 0 ? 'text-red-500' : 'text-blue-500'}`}>
-                      <span className={`text-[1.3rem]`}>{selectRevenueData.toLocaleString()}원</span>
-                      <span className="text-[0.9rem]">({sseData?.rate.toFixed(2)}%)</span>
-                    </div>
                     <div className="flex space-x-3 items-end text-[1.5rem]">
                       {sseData && sseData.amount > 0 && (
                         <>
                           <div className="flex items-center space-x-1">
                             <span className="text-[0.9rem]">보유수량</span>
-                            <span className="text-black text-[1.3rem]">{sseData.amount.toLocaleString()}</span>
+                            <span className="text-black text-[1.2rem]">{sseData.amount.toLocaleString()}</span>
                           </div>
                           <div className="flex items-center space-x-1">
                             <span className="text-[0.9rem]">평균단가</span>
-                            <span className="text-black text-[1.3rem]">{sseData.average.toLocaleString()}</span>
+                            <span className="text-black text-[1.2rem]">{sseData.average.toLocaleString()}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <span className="text-[0.9rem]">예상 배당금</span>
+                            <span className="text-black text-[1.2rem]">  
+                            {(
+                              (sseData?.stockChartResDto[sseData.stockChartResDto.length - 1]?.stockDividend || 0) * 
+                              (sseData?.amount || 0)
+                              ).toLocaleString()}원
+                            </span>
                           </div>
                         </>
                       )}
+                    </div>
 
-                      <div className="flex items-center space-x-1">
-                        <span className="text-[0.9rem]">현재가</span>
-                        <span className={`text-black text-[1.3rem]`}>{selectCurrentData.priceEnd.toLocaleString()}</span>
-                        <span className="text-black text-[1.3rem]">원</span>
-                        {/* Price Change */}
-                        {sseData && sseData.stockChartResDto.length === 1 && (
-                          <span
-                            className={`text-[1rem] flex pt-2 items-end ${
-                              selectCurrentData.priceEnd - sseData.stockChartResDto[0].priceBefore > 0
-                                ? 'text-red-500'
-                                : 'text-blue-500'
-                            }`}
-                          >
-                            (
-                            {selectCurrentData.priceEnd - sseData.stockChartResDto[0].priceBefore > 0
-                              ? (selectCurrentData.priceEnd - sseData.stockChartResDto[0].priceBefore).toLocaleString()
-                              : `-${Math.abs(selectCurrentData.priceEnd - sseData.stockChartResDto[0].priceBefore).toLocaleString()}`}
-                            )
-                          </span>
-                        )}
-                        {sseData && sseData.stockChartResDto.length > 1 && (
-                          <span
-                            className={`text-[1rem] flex pt-2 items-end ${
-                              selectCurrentData.priceEnd - sseData.stockChartResDto[sseData.stockChartResDto.length - 2].priceEnd > 0
-                                ? 'text-red-500'
-                                : 'text-blue-500'
-                            }`}
-                          >
-                            (
-                            {selectCurrentData.priceEnd - sseData.stockChartResDto[sseData.stockChartResDto.length - 2].priceEnd < 0
-                              ? `-${Math.abs(selectCurrentData.priceEnd - sseData.stockChartResDto[sseData.stockChartResDto.length - 2].priceEnd).toLocaleString()}`
-                              : (selectCurrentData.priceEnd - sseData.stockChartResDto[sseData.stockChartResDto.length - 2].priceEnd).toLocaleString()}
-                            )
-                          </span>
-                        )}
-                      </div>
+                    <div className="flex items-center space-x-1">
+                      <span className="text-[0.9rem]">현재가</span>
+                      <span className={`text-black text-[1.3rem]`}>{selectCurrentData.priceEnd.toLocaleString()}</span>
+                      <span className="text-black text-[1.3rem]">원</span>
+                      {/* Price Change */}
+                      {sseData && sseData.stockChartResDto.length === 1 && (
+                        <span
+                          className={`text-[1rem] flex pt-2 items-end ${
+                            selectCurrentData.priceEnd - sseData.stockChartResDto[0].priceBefore > 0
+                              ? 'text-red-500'
+                              : 'text-blue-500'
+                          }`}
+                        >
+                          (
+                          {selectCurrentData.priceEnd - sseData.stockChartResDto[0].priceBefore > 0
+                            ? (selectCurrentData.priceEnd - sseData.stockChartResDto[0].priceBefore).toLocaleString()
+                            : `-${Math.abs(selectCurrentData.priceEnd - sseData.stockChartResDto[0].priceBefore).toLocaleString()}`}
+                          )
+                        </span>
+                      )}
+                      {sseData && sseData.stockChartResDto.length > 1 && (
+                        <span
+                          className={`text-[1rem] flex pt-2 items-end ${
+                            selectCurrentData.priceEnd - sseData.stockChartResDto[sseData.stockChartResDto.length - 2].priceEnd > 0
+                              ? 'text-red-500'
+                              : 'text-blue-500'
+                          }`}
+                        >
+                          (
+                          {selectCurrentData.priceEnd - sseData.stockChartResDto[sseData.stockChartResDto.length - 2].priceEnd < 0
+                            ? `-${Math.abs(selectCurrentData.priceEnd - sseData.stockChartResDto[sseData.stockChartResDto.length - 2].priceEnd).toLocaleString()}`
+                            : (selectCurrentData.priceEnd - sseData.stockChartResDto[sseData.stockChartResDto.length - 2].priceEnd).toLocaleString()}
+                          )
+                        </span>
+                      )}
                     </div>
                   </div>
 
