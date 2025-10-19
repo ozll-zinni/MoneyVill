@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   ChartCanvas,
   Chart as FinancialChart,
@@ -33,66 +33,73 @@ interface ChartData extends CandleData {
 }
 
 const ChartComponent: React.FC<ChartProps> = ({ data, height }) => {
-  const chartRef = useRef<HTMLDivElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 0, height });
+  // SSR-safe client detection
   const [isClientRendered, setIsClientRendered] = useState(false);
-
-  // 클라이언트 사이드 렌더링 확인
   useEffect(() => {
     setIsClientRendered(true);
   }, []);
 
-  // useLayoutEffect를 사용하여 DOM 업데이트 전에 크기 계산
+  // width state + refs for RAF + current cached width
+  const [width, setWidth] = useState<number>(0);
+  const widthRef = useRef<number>(0);
+  const rafRef = useRef<number | null>(null);
+  const chartRef = useRef<HTMLDivElement | null>(null);
+
+  // Measure & update width using RAF + value comparison
   useLayoutEffect(() => {
     if (!isClientRendered) return;
 
-    const updateChartSize = () => {
-      if (chartRef.current) {
-        const { width } = chartRef.current.getBoundingClientRect();
-        setDimensions(prev => ({
-          ...prev,
-          width: Math.floor(width)  // 정수값으로 반올림하여 사용
-        }));
+    const getDeviceRatio = () => (typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1);
+
+    const scheduleUpdate = () => {
+      // cancel previously scheduled RAF
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
       }
+
+      rafRef.current = requestAnimationFrame(() => {
+        if (!chartRef.current) return;
+        const rect = chartRef.current.getBoundingClientRect();
+        const newW = Math.floor(rect.width || 0);
+
+        if (newW && newW !== widthRef.current) {
+          widthRef.current = newW;
+          setWidth(newW);
+        }
+      });
     };
 
-    // 초기 크기 설정
-    updateChartSize();
+    // initial measurement (useLayoutEffect runs before paint)
+    scheduleUpdate();
 
-    // ResizeObserver 설정
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const { width } = entry.contentRect;
-        setDimensions(prev => ({
-          ...prev,
-          width: Math.floor(width)
-        }));
-      }
+    const ro = new ResizeObserver(() => {
+      scheduleUpdate();
     });
 
-    if (chartRef.current) {
-      resizeObserver.observe(chartRef.current);
-    }
-
-    // 윈도우 리사이즈 이벤트 리스너
-    window.addEventListener('resize', updateChartSize);
+    if (chartRef.current) ro.observe(chartRef.current);
+    window.addEventListener("resize", scheduleUpdate);
 
     return () => {
-      resizeObserver.disconnect();
-      window.removeEventListener('resize', updateChartSize);
+      ro.disconnect();
+      window.removeEventListener("resize", scheduleUpdate);
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
     };
   }, [isClientRendered]);
 
-  // 데이터 처리 및 계산 로직
+  // Prepare and validate data
   const sortedData = data
     .filter((d) => d.date instanceof Date && !isNaN(d.date.getTime()))
     .sort((a, b) => a.date.getTime() - b.date.getTime());
 
-  if (sortedData.length === 0 || !isClientRendered || dimensions.width === 0) {
+  if (sortedData.length === 0 || !isClientRendered || width === 0) {
     return <div ref={chartRef} style={{ width: "100%", height: `${height}px` }}>Loading...</div>;
   }
 
-  // 기존의 차트 계산 로직...
+  // Indicators and calculations
   const ema12 = ema()
     .id(1)
     .options({ windowSize: 12 })
@@ -106,16 +113,16 @@ const ChartComponent: React.FC<ChartProps> = ({ data, height }) => {
     .accessor((d: ChartData) => d.ema26);
 
   const elder = elderRay();
-  const calculatedData = elder(ema26(ema12(sortedData)));
+  const calculatedData = elder(ema26(ema12(sortedData as ChartData[])));
 
   const ScaleProvider = discontinuousTimeScaleProviderBuilder()
-    .inputDateAccessor((d) => d.date);
-    
+    .inputDateAccessor((d: any) => d.date);
+
   const { data: chartData, xScale, xAccessor, displayXAccessor } = ScaleProvider(calculatedData);
 
   const xExtents = [
     xAccessor(chartData[0]),
-    xAccessor(chartData[chartData.length - 2])
+    xAccessor(chartData[chartData.length - 2]),
   ];
 
   const pricesDisplayFormat = format(".0f");
@@ -126,12 +133,14 @@ const ChartComponent: React.FC<ChartProps> = ({ data, height }) => {
     d.close > d.open ? "rgba(38, 166, 154, 0.3)" : "rgba(239, 83, 80, 0.3)"
   );
 
+  const ratio = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
+
   return (
     <div ref={chartRef} style={{ width: "100%", height: `${height}px` }}>
       <ChartCanvas
         height={height}
-        width={dimensions.width}
-        ratio={1}
+        width={width}
+        ratio={ratio}
         margin={{ left: 0, right: 60, top: 10, bottom: 30 }}
         data={chartData}
         seriesName="Data"
@@ -140,31 +149,35 @@ const ChartComponent: React.FC<ChartProps> = ({ data, height }) => {
         displayXAccessor={displayXAccessor}
         xExtents={xExtents}
       >
-        <FinancialChart id={1} height={height * 0.7} yExtents={(d) => [d.high, d.low]}>
+        <FinancialChart id={1} height={height * 0.7} yExtents={(d: any) => [d.high, d.low]}>
           <XAxis showGridLines />
           <YAxis showGridLines tickFormat={pricesDisplayFormat} />
-          <CandlestickSeries 
-            stroke={d => d.close > d.open ? "#EA455D" : "#3FA2F6"} 
-            wickStroke={d => d.close > d.open ? "#EA455D" : "#3FA2F6"} 
-            fill={d => d.close > d.open ? "#EA455D" : "#3FA2F6"} 
+          <CandlestickSeries
+            stroke={(d: any) => d.close > d.open ? "#EA455D" : "#3FA2F6"}
+            wickStroke={(d: any) => d.close > d.open ? "#EA455D" : "#3FA2F6"}
+            fill={(d: any) => d.close > d.open ? "#EA455D" : "#3FA2F6"}
           />
           <LineSeries yAccessor={ema12.accessor()} strokeStyle="#EA455D" />
           <LineSeries yAccessor={ema26.accessor()} strokeStyle="#3FA2F6" />
           <MouseCoordinateX displayFormat={timeDisplayFormat} />
-          <MouseCoordinateY displayFormat={pricesDisplayFormat} /> 
+          <MouseCoordinateY displayFormat={pricesDisplayFormat} />
           <EdgeIndicator
             itemType="last"
             rectWidth={50}
-            fill={(d) => (d.close > d.open ? "#EA455D" : "#3FA2F6")}
-            yAccessor={(d) => d.close}
+            fill={(d: any) => (d.close > d.open ? "#EA455D" : "#3FA2F6")}
+            yAccessor={(d: any) => d.close}
             displayFormat={pricesDisplayFormat}
           />
         </FinancialChart>
 
-        {/* Volume Chart (30% of height) */}
-        <FinancialChart id={2} origin={(w, h) => [0, h - height * 0.3]} height={height * 0.3} yExtents={(d) => d.volume}>
-          <YAxis tickFormat={volumeFormat} /> {/* 거래량 Y축 형식 지정 */}
-          <BarSeries fillStyle={volumeColor} yAccessor={(d) => d.volume} />
+        <FinancialChart
+          id={2}
+          origin={(w, h) => [0, h - height * 0.3]}
+          height={height * 0.3}
+          yExtents={(d: any) => d.volume}
+        >
+          <YAxis tickFormat={volumeFormat} />
+          <BarSeries fillStyle={volumeColor as any} yAccessor={(d: any) => d.volume} />
           <MouseCoordinateY displayFormat={volumeFormat} />
         </FinancialChart>
 

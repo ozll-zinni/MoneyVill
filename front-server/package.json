@@ -10,8 +10,6 @@
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.5.0",
-    "@types/d3-format": "^3.0.4",
-    "@types/d3-time-format": "^4.0.3",
     "@types/event-source-polyfill": "^1.0.1",
     "@types/jest": "^27.4.0",
     "@types/node": "^17.0.10",
@@ -83,6 +81,8 @@
     ]
   },
   "devDependencies": {
+    "@types/d3-format": "^3.0.4",
+    "@types/d3-time-format": "^4.0.3",
     "@types/react-lottie": "^1.2.6",
     "@types/styled-components": "^5.1.26",
     "tailwindcss": "^3.3.1"
